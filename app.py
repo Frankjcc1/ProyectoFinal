@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import text
 
 
 app = Flask(__name__)
@@ -18,7 +19,8 @@ db = SQLAlchemy(app)
 @app.route('/test_connection', methods=['GET'])
 def test_connection():
     try:
-        db.session.execute('SELECT 1')
+        # Usar `text()` para envolver la consulta SQL
+        db.session.execute(text('SELECT 1'))
         return jsonify({"message": "Conexión exitosa con la base de datos"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
