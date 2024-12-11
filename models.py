@@ -12,8 +12,9 @@ class Alumno(db.Model):
     fotoPerfilUrl = db.Column(db.String(255), nullable=True)
     password = db.Column(db.String(255), nullable=False)
 
+
     def __init__(self, nombres, apellidos, matricula, promedio, password):
-        # Validaciones
+        # Validations
         if not nombres or not isinstance(nombres, str):
             raise ValueError("Nombres debe ser una cadena de caracteres")
         if not apellidos or not isinstance(apellidos, str):
@@ -25,7 +26,7 @@ class Alumno(db.Model):
         if not password or not isinstance(password, str):
             raise ValueError("Password debe ser una cadena de caracteres")
 
-        # Asignación de valores
+        # Assignation des valeurs
         self.nombres = nombres
         self.apellidos = apellidos
         self.matricula = matricula
@@ -33,7 +34,7 @@ class Alumno(db.Model):
         self.password = password
 
     def to_dict(self):
-        """Devuelve los datos del alumno en formato de diccionario"""
+        """Retourne les données de l'étudiant sous forme de dictionnaire"""
         return {
             "id": self.id,
             "nombres": self.nombres,
@@ -51,9 +52,10 @@ class Profesor(db.Model):
     apellidos = db.Column(db.String(100), nullable=False)
     numeroEmpleado = db.Column(db.Integer, nullable=False, unique=True)
     horasClase = db.Column(db.Integer, nullable=False)
+    
 
     def __init__(self, nombres, apellidos, numeroEmpleado, horasClase):
-        # Validaciones
+        # Validations
         if not nombres or not isinstance(nombres, str):
             raise ValueError("Nombres debe ser una cadena de caracteres")
         if not apellidos or not isinstance(apellidos, str):
@@ -63,14 +65,14 @@ class Profesor(db.Model):
         if not isinstance(horasClase, int) or horasClase < 0:
             raise ValueError("Horas de Clase debe ser un número positivo")
 
-        # Asignación de valores
+        # Assignation des valeurs
         self.nombres = nombres
         self.apellidos = apellidos
         self.numeroEmpleado = numeroEmpleado
         self.horasClase = horasClase
 
     def to_dict(self):
-        """Devuelve los datos del profesor en formato de diccionario"""
+        """Retourne les données du professeur sous forme de dictionnaire"""
         return {
             "id": self.id,
             "nombres": self.nombres,
