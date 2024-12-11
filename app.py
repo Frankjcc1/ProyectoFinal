@@ -10,7 +10,7 @@ app = Flask(__name__)
 #profesores = []
 
 # Configuración de la base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Javier15caso@<endpoint>:5432/<nombre_base_datos>'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Javier15caso@database-1.abcdefg123.us-east-1.rds.amazonaws.com:5432/database-1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar SQLAlchemy
