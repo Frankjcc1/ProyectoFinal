@@ -5,7 +5,8 @@ from sqlalchemy.exc import IntegrityError
 app = Flask(__name__)
 
 # Configuración de la base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:db_admin@<endpoint>:3306/database-1'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:db_admin@database-1.cxcoe882c78q.us-east-1.rds.amazonaws.com:3306/database-1'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar SQLAlchemy
