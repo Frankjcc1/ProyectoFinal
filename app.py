@@ -21,13 +21,11 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-#Credenciales para manejo de S3
 YOUR_AWS_ACCESS_KEY_ID = 'ASIARAUTZWJBFRO4G7MN'
 YOUR_AWS_SECRET_ACCESS_KEY = 'NDrC1MGxgGW0eadUttS0dNFwLc1GPkXiwQU7mOQz'
 YOUR_AWS_SESSION_TOKEN = 'IQoJb3JpZ2luX2VjEPb//////////wEaCXVzLXdlc3QtMiJGMEQCIDov16M523ZnmUgFICR2c+RQpkAP7OK634ZePU63ntZlAiAdbc0XttZUhxoiZzZajDY53gN+acemFho80RIZ1BFw8CrBAgiv//////////8BEAAaDDA3MDEwMzE4MzkzOCIMGYig0kUKmAtTtgP6KpUCmbpxuHRv7JoMyILPgqzuSgevlS+C9w7FB2TfJtkJCtgN1QkI0sxe23AePWI+68LXtQBB+M49ImTgn28MxAv+ACwhvDTXBAtfe9xLECesZS6pKCaq9mN8rphuJrD2oNHrfgZFXHTMdz7NgpzhN/3Ks+5QhteloIUb5Hs2NSqy31/Jfbu0Q22NKA6TCuigZV+jrLmd7cl31O/+I/cOXKwO20emJgaJQN8AEluRhpzMyrha7WzQVSnWL7w4eSnh4HHHROcuBFwU22cCVtvscKDmh42N5Ieu46L1ncQ3ByNL8RoMRI8X2NwMFyJjDjh4kqham1yiyrC7V/18v2viyrOtyntmxpQEsjUnYCjIow2rs5OMBIrkzzDaiui6BjqeAb56euVljNodPU2jgHzKMFjHL65K3NNtd6sJ7GvH81hXy27zwYUMSq1NS8C99isVda0aKJXJwQO+jYVefGIdfygEZrDEvqInZuphbjj2HMgyZmit5WfS1Q6H4kW3afCMANcCHjHUkcJ9c/85sgVnyPQfZwOWL3egeAnhc8SoFxmuC8bATvRvqiwtU0i8SzwAKLrjJS24kBbw8KwpKtbI'
 YOUR_AWS_REGION_NAME = 'us-east-1' 
 
-# Configurer le client S3
 s3 = boto3.client(
     's3',
     aws_access_key_id=YOUR_AWS_ACCESS_KEY_ID,
@@ -36,9 +34,8 @@ s3 = boto3.client(
     region_name=YOUR_AWS_REGION_NAME
 )
 
-BUCKET_NAME = 'bucketdgo'
+BUCKET_NAME = 'alumnos-profile-pictures'
 
-# Configurer SNS 
 sns_client = boto3.client(
     'sns',
     aws_access_key_id=YOUR_AWS_ACCESS_KEY_ID,
