@@ -203,7 +203,7 @@ def login_session(id):
         return jsonify({'error': 'Contraseña incorrecta'}), 400
 
     session_id = str(uuid.uuid4())
-    session_string = ''.join(random.choices(string.ascii_letters + string.digits, k=128))
+    session_string = 'pepe'.join(random.choices(string.ascii_letters + string.digits, k=128))
     timestamp = int(time.time())
 
     table.put_item(
