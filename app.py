@@ -2,13 +2,14 @@ import random
 import string
 import time
 import uuid
+
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from models import db, Alumno, Profesor
+from werkzeug.utils import secure_filename
 import boto3
 from botocore.exceptions import NoCredentialsError
-import os
-from werkzeug.utils import secure_filename
+
+from models import db, Alumno, Profesor
 
 app = Flask(__name__)
 
@@ -21,9 +22,9 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-YOUR_AWS_ACCESS_KEY_ID = 'ASIARAUTZWJBFRO4G7MN'
-YOUR_AWS_SECRET_ACCESS_KEY = 'NDrC1MGxgGW0eadUttS0dNFwLc1GPkXiwQU7mOQz'
-YOUR_AWS_SESSION_TOKEN = 'IQoJb3JpZ2luX2VjEPb//////////wEaCXVzLXdlc3QtMiJGMEQCIDov16M523ZnmUgFICR2c+RQpkAP7OK634ZePU63ntZlAiAdbc0XttZUhxoiZzZajDY53gN+acemFho80RIZ1BFw8CrBAgiv//////////8BEAAaDDA3MDEwMzE4MzkzOCIMGYig0kUKmAtTtgP6KpUCmbpxuHRv7JoMyILPgqzuSgevlS+C9w7FB2TfJtkJCtgN1QkI0sxe23AePWI+68LXtQBB+M49ImTgn28MxAv+ACwhvDTXBAtfe9xLECesZS6pKCaq9mN8rphuJrD2oNHrfgZFXHTMdz7NgpzhN/3Ks+5QhteloIUb5Hs2NSqy31/Jfbu0Q22NKA6TCuigZV+jrLmd7cl31O/+I/cOXKwO20emJgaJQN8AEluRhpzMyrha7WzQVSnWL7w4eSnh4HHHROcuBFwU22cCVtvscKDmh42N5Ieu46L1ncQ3ByNL8RoMRI8X2NwMFyJjDjh4kqham1yiyrC7V/18v2viyrOtyntmxpQEsjUnYCjIow2rs5OMBIrkzzDaiui6BjqeAb56euVljNodPU2jgHzKMFjHL65K3NNtd6sJ7GvH81hXy27zwYUMSq1NS8C99isVda0aKJXJwQO+jYVefGIdfygEZrDEvqInZuphbjj2HMgyZmit5WfS1Q6H4kW3afCMANcCHjHUkcJ9c/85sgVnyPQfZwOWL3egeAnhc8SoFxmuC8bATvRvqiwtU0i8SzwAKLrjJS24kBbw8KwpKtbI'
+YOUR_AWS_ACCESS_KEY_ID = 'ASIARAUTZWJBPAEKMVV2'
+YOUR_AWS_SECRET_ACCESS_KEY = 'c69Is8oZUkFXHGxg+PWerla0eQ6cD9B343/uhhNO'
+YOUR_AWS_SESSION_TOKEN = 'IQoJb3JpZ2luX2VjEPr//////////wEaCXVzLXdlc3QtMiJGMEQCIHWqdL0m/h6ChAeHPNX6dhMogd4du+k+PqBk/3dxTOe6AiAZvDKFqO+lOuMMbySS3pZWdSXCdYVk9z8VhSYbJR7o3irBAgiy//////////8BEAAaDDA3MDEwMzE4MzkzOCIMf+PW1VdVJD0h4B9tKpUCj7uUJHAehawkl4fkPnPl/SaNoOk7XryQ+HZmnkR1xP8fGh/pZ0ETWxA0HWJFpx6dUmsq38MK5Itrs+mt7ZOSJL/D99/limS1n2vQGy54K4yMaJ3+a4tmzrbnxYhn7Hi7DUaNEs+dPwB0QreVtOXWzHaQ4blobRaKOnXZwyaD8xt8SHY0UPyVVU9JzTSnw0YSrX7fGOodnqPvC1cefSpUYZ3x48RnFIUeEsgg2tDaASosQ/vMvayekW6EhGohNtaF9xbEYLd41I8OWwCQC4oVFF6V+9thehPUY5Hnd6S4O/EoRIZ7Xs7Av6PrqWvgvgQvDTWLy9HRDeN5Oh7Fg/hdxwrZnuQw1QEg/mblm8BviMIgU623GzDV8+i6BjqeAYz9IVT8jnfcQha/t/L3/OUD8PkLgnXfTsW2iuC1+t1LD9M2DUHongtX2lCSZXXQIe9shT+WG9Zw+ar9Dwj9UYiXto0bYGx8wMyZhZ63Up+6c8B2u9mHMJpOgjFBscdt3VZ/nxpuIzx7pqcrBgEd1XL6rBoR+aFlRKTP5pdzBjen22DPYcIJDdBjaEbHKbLNdsOJrwt2Fr0f7vAUuoJD'
 YOUR_AWS_REGION_NAME = 'us-east-1' 
 
 s3 = boto3.client(
@@ -46,7 +47,7 @@ sns_client = boto3.client(
 
 SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:070103183938:MiTema'  
 
-# Configurer le client DynamoDB
+
 dynamodb = boto3.resource(
     'dynamodb',
     aws_access_key_id=YOUR_AWS_ACCESS_KEY_ID,
@@ -55,12 +56,9 @@ dynamodb = boto3.resource(
     region_name=YOUR_AWS_REGION_NAME   
 )
 
-# Table DynamoDB
+
 table = dynamodb.Table('sesiones-alumnos')
 
-# --- Routes pour Alumnos ---
-
-# POST /alumnos - Ajouter un nouvel Alumno
 @app.route('/alumnos', methods=['POST'])
 def add_alumno():
     data = request.get_json()
@@ -78,13 +76,13 @@ def add_alumno():
     except (KeyError, ValueError) as e:
         return jsonify({'error': str(e)}), 400
 
-# GET /alumnos - Obtenir la liste de tous les Alumnos
+
 @app.route('/alumnos', methods=['GET'])
 def get_alumnos():
     alumnos = Alumno.query.all()
     return jsonify([alumno.to_dict() for alumno in alumnos]), 200
 
-# GET /alumnos/{id} - Obtenir un Alumno par ID
+
 @app.route('/alumnos/<int:id>', methods=['GET'])
 def get_alumno_by_id(id):
     alumno = Alumno.query.get(id)
@@ -92,7 +90,7 @@ def get_alumno_by_id(id):
         return jsonify({'error': 'Alumno no encontrado'}), 404
     return jsonify(alumno.to_dict()), 200
 
-# PUT /alumnos/{id} - Mettre à jour un Alumno
+
 @app.route('/alumnos/<int:id>', methods=['PUT'])
 def update_alumno(id):
     data = request.get_json()
@@ -119,7 +117,6 @@ def update_alumno(id):
         return jsonify({'error': str(e)}), 400
     
 
-# DELETE /alumnos/{id} - Supprimer un Alumno
 @app.route('/alumnos/<int:id>', methods=['DELETE'])
 def delete_alumno(id):
     alumno = Alumno.query.get(id)
@@ -129,7 +126,7 @@ def delete_alumno(id):
     db.session.commit()
     return jsonify({'message': 'Alumno eliminado'}), 200
 
-# POST- ajouter une photo de profil
+
 @app.route('/alumnos/<int:id>/fotoPerfil', methods=['POST'])
 def upload_profile_picture(id):
     alumno = Alumno.query.get(id)
@@ -144,13 +141,10 @@ def upload_profile_picture(id):
         return jsonify({'error': 'El nombre del archivo está vacío'}), 400
 
     try:
-        # Sécuriser le nom du fichier
         filename = secure_filename(file.filename)
 
-        # Construire le chemin de l'objet dans S3
         s3_path = f"{id}/{filename}"
 
-        # Téléverser l'image dans S3
         s3.upload_fileobj(
             file,
             BUCKET_NAME,
@@ -158,10 +152,8 @@ def upload_profile_picture(id):
             ExtraArgs={'ACL': 'public-read', 'ContentType': file.content_type}
         )
 
-        # Construire l'URL publique de l'image
         photo_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{s3_path}"
 
-        # Mettre à jour l'URL dans la base de données
         alumno.fotoPerfilUrl = photo_url
         db.session.commit()
 
@@ -172,15 +164,13 @@ def upload_profile_picture(id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-#POST - envoyer une notification
+
 @app.route('/alumnos/<int:id>/email', methods=['POST'])
 def send_email_notification(id):
-    # Récupérer les données de l'élève
     alumno = Alumno.query.get(id)
     if not alumno:
         return jsonify({'error': 'Alumno no encontrado'}), 404
 
-    # Construire le contenu de l'email
     email_content = (
         f"Información del alumno:\n"
         f"Nombre: {alumno.nombres} {alumno.apellidos}\n"
@@ -188,7 +178,6 @@ def send_email_notification(id):
     )
 
     try:
-        # Publier le message dans le topic SNS
         sns_client.publish(
             TopicArn=SNS_TOPIC_ARN,
             Message=email_content,
@@ -199,7 +188,6 @@ def send_email_notification(id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# POST - login session
 @app.route('/alumnos/<int:id>/session/login', methods=['POST'])
 def login_session(id):
     data = request.get_json()
@@ -211,16 +199,13 @@ def login_session(id):
     if not 'password' in data:
         return jsonify({'error': 'Contraseña requerida'}), 400
 
-    # Vérifier le mot de passe
     if alumno.password != data['password']:
         return jsonify({'error': 'Contraseña incorrecta'}), 400
 
-    # Générer un UUID et un sessionString aléatoire
     session_id = str(uuid.uuid4())
     session_string = ''.join(random.choices(string.ascii_letters + string.digits, k=128))
     timestamp = int(time.time())
 
-    # Insérer une entrée dans DynamoDB
     table.put_item(
         Item={
             'id': session_id,
@@ -233,7 +218,6 @@ def login_session(id):
 
     return jsonify({'message': 'Sesión creada', 'sessionString': session_string, 'sessionId': session_id}), 200
 
-# POST - vérifier si une session est valide
 @app.route('/alumnos/<int:id>/session/verify', methods=['POST'])
 def verify_session(id):
     data = request.get_json()
@@ -241,7 +225,6 @@ def verify_session(id):
     if not 'sessionString' in data:
         return jsonify({'error': 'SessionString requerido'}), 400
 
-    # Chercher l'entrée dans DynamoDB
     response = table.scan(
         FilterExpression='alumnoId = :alumnoId AND sessionString = :sessionString',
         ExpressionAttributeValues={
@@ -260,7 +243,6 @@ def verify_session(id):
 
     return jsonify({'message': 'Sesión válida'}), 200
 
-# POST - session logout
 @app.route('/alumnos/<int:id>/session/logout', methods=['POST'])
 def logout_session(id):
     data = request.get_json()
@@ -268,7 +250,6 @@ def logout_session(id):
     if not 'sessionString' in data:
         return jsonify({'error': 'SessionString requerido'}), 400
 
-    # Chercher l'entrée dans DynamoDB
     response = table.scan(
         FilterExpression='alumnoId = :alumnoId AND sessionString = :sessionString',
         ExpressionAttributeValues={
@@ -283,7 +264,6 @@ def logout_session(id):
 
     session = items[0]
 
-    # Désactiver la session
     table.update_item(
         Key={'id': session['id']},
         UpdateExpression='SET active = :active',
@@ -293,8 +273,6 @@ def logout_session(id):
     return jsonify({'message': 'Sesión cerrada con éxito'}), 200
 
 
-
-# POST /profesores - Ajouter un nouveau Profesor
 @app.route('/profesores', methods=['POST'])
 def add_profesor():
     data = request.get_json()
@@ -311,13 +289,11 @@ def add_profesor():
     except (KeyError, ValueError) as e:
         return jsonify({'error': str(e)}), 400
 
-# GET /profesores - Obtenir la liste de tous les Profesores
 @app.route('/profesores', methods=['GET'])
 def get_profesores():
     profesores = Profesor.query.all()
     return jsonify([profesor.to_dict() for profesor in profesores]), 200
 
-# GET /profesores/{id} - Obtenir un Profesor par ID
 @app.route('/profesores/<int:id>', methods=['GET'])
 def get_profesor_by_id(id):
     profesor = Profesor.query.get(id)
@@ -325,7 +301,7 @@ def get_profesor_by_id(id):
         return jsonify({'error': 'Profesor no encontrado'}), 404
     return jsonify(profesor.to_dict()), 200
 
-# PUT /profesores/{id} - Mettre à jour un Profesor
+
 @app.route('/profesores/<int:id>', methods=['PUT'])
 def update_profesor(id):
     data = request.get_json()
@@ -352,7 +328,6 @@ def update_profesor(id):
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
     
-# DELETE /profesores/{id} - Supprimer un Profesor
 @app.route('/profesores/<int:id>', methods=['DELETE'])
 def delete_profesor(id):
     profesor = Profesor.query.get(id)
