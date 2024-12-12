@@ -14,7 +14,7 @@ class Alumno(db.Model):
 
 
     def __init__(self, nombres, apellidos, matricula, promedio, password):
-        # Validations
+
         if not nombres or not isinstance(nombres, str):
             raise ValueError("Nombres debe ser una cadena de caracteres")
         if not apellidos or not isinstance(apellidos, str):
@@ -26,7 +26,7 @@ class Alumno(db.Model):
         if not password or not isinstance(password, str):
             raise ValueError("Password debe ser una cadena de caracteres")
 
-        # Assignation des valeurs
+
         self.nombres = nombres
         self.apellidos = apellidos
         self.matricula = matricula
